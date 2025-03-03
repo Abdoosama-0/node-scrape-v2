@@ -1,7 +1,7 @@
 // apt-get update && apt-get install -y libnss3 libatk1.0-0 libx11-xcb1
 
 const express = require("express");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
 const cors = require("cors");
 
 const app = express();
@@ -12,11 +12,19 @@ const PORT = process.env.PORT || 3000;
 app.get("/scrape", async (req, res) => {
     try {
         const browser = await puppeteer.launch({
-            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
-            args: ["--no-sandbox", "--disable-setuid-sandbox"],
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome",
+            headless: true, // تأكد من أنه يعمل بدون واجهة رسومية
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-gpu",
+                "--disable-dev-shm-usage",
+                "--single-process"
+            ],
         });
         
         //==============localy================
+        ////puppeteer not core
         // const browser = await puppeteer.launch({
         //     headless: "new",
         //     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
