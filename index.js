@@ -8,6 +8,17 @@ const app = express();
 app.use(cors());
 
 const PORT = process.env.PORT || 3000;
+console.log("=============================================================================================");
+const { exec } = require("child_process");
+
+exec("which google-chrome", (err, stdout, stderr) => {
+    console.log("✅ Google Chrome Path:", stdout || stderr);
+});
+
+exec("which chromium", (err, stdout, stderr) => {
+    console.log("✅ Chromium Path:", stdout || stderr);
+});
+console.log("=============================================================================================");
 
 app.get("/scrape", async (req, res) => {
     try {
