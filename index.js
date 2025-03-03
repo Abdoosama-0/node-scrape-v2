@@ -1,5 +1,7 @@
-// apt-get update && apt-get install -y libnss3 libatk1.0-0 libx11-xcb1
+//  "scripts": {
+//     "postinstall": "puppeteer install"
 
+//   },
 const express = require("express");
 const puppeteer = require("puppeteer");
 const cors = require("cors");
@@ -23,7 +25,11 @@ app.get("/scrape", async (req, res) => {
         //==============================
 
         const page = await browser.newPage();
-        await page.goto("https://www.bbc.com/news", { waitUntil: "networkidle2" });
+        await page.setUserAgent(//اعمل نفسك يوسر
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        );
+        
+        await page.goto("https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250", { waitUntil: "networkidle2" });
 
         // تأخير إضافي للسماح بتحميل المحتوى الديناميكي
         await new Promise(resolve => setTimeout(resolve, 3000));
@@ -34,16 +40,34 @@ app.get("/scrape", async (req, res) => {
         // console.log(pageContent);
 
         // التحقق مما إذا كان العنصر موجودًا بالفعل
-        const exists = await page.$(".sc-530fb3d6-1");
-        if (!exists) {
-            throw new Error("العنصر h3 غير موجود في الصفحة");
-        }
+        // const exists = await page.$(".ipc-metadata-list-summary-item");
+        // if (!exists) {
+        //     throw new Error("العنصر h3 غير موجود في الصفحة");
+        // }
 
         // استخراج العناوين
         const data = await page.evaluate(() => {
-            return Array.from(document.querySelectorAll(".sc-530fb3d6-1")).map(el => ({
-                title: el.querySelector(".sc-87075214-3")?.innerText || "غير متوفر",
-            }));
+            return Array.from(document.querySelectorAll(".ipc-metadata-list-summary-item")).map(el => 
+
+                {
+                  // استخراج النص من العنصر
+                  const text = el.querySelector(".ipc-title__text")?.innerText || "غير متوفر";
+        
+                  // تقسيم النص إلى رقم وعنوان إذا كان يحتوي على ". "
+                  const parts = text.split(". ");
+                  const elements = [...el.querySelectorAll(".URyjV")];
+          
+                  // إنشاء كائن بالبيانات المستخرجة
+                  return {
+                    year: elements[0]?.innerText.trim() || "غير متوفر", // أول عنصر
+                    time: elements[1]?.innerText.trim() || "غير متوفر", // ثاني عنصر
+                    age: elements[2]?.innerText.trim() || "غير متوفر", // ثالث
+                      rank: parts.length > 1 ? parseInt(parts[0], 10) : null, // استخراج الرقم إذا وجد
+                      title: parts.length > 1 ? parts[1] : text // استخراج العنوان إذا كان النمط صحيحًا
+                  };
+                
+            }
+        );
         });
 
         await browser.close();
@@ -56,7 +80,13 @@ app.get("/scrape", async (req, res) => {
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-//==================================================================scraping js
+
+
+//==================================================================scraping dynamic js  with deploy on railway
+// //  "scripts": {
+// //     "postinstall": "puppeteer install"
+
+// //   },
 // const express = require("express");
 // const puppeteer = require("puppeteer");
 // const cors = require("cors");
@@ -68,10 +98,16 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // app.get("/scrape", async (req, res) => {
 //     try {
+    
+        
+//         //==============localy================
+//         //puppeteer not core
 //         const browser = await puppeteer.launch({
 //             headless: "new",
-//             args: ["--no-sandbox", "--disable-setuid-sandbox"],
+//             args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
 //         });
+        
+//         //==============================
 
 //         const page = await browser.newPage();
 //         await page.goto("https://www.bbc.com/news", { waitUntil: "networkidle2" });
@@ -85,15 +121,15 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 //         // console.log(pageContent);
 
 //         // التحقق مما إذا كان العنصر موجودًا بالفعل
-//         const exists = await page.$("span");
+//         const exists = await page.$(".sc-530fb3d6-1");
 //         if (!exists) {
 //             throw new Error("العنصر h3 غير موجود في الصفحة");
 //         }
 
 //         // استخراج العناوين
 //         const data = await page.evaluate(() => {
-//             return Array.from(document.querySelectorAll("span")).map(el => ({
-//                 title: el.innerText,
+//             return Array.from(document.querySelectorAll(".sc-530fb3d6-1")).map(el => ({
+//                 title: el.querySelector(".sc-87075214-3")?.innerText || "غير متوفر",
 //             }));
 //         });
 
@@ -106,6 +142,7 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 // });
 
 // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
 //==================================================static scrape==============
 // const express = require("express");
