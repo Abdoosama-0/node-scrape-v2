@@ -1,45 +1,24 @@
 // apt-get update && apt-get install -y libnss3 libatk1.0-0 libx11-xcb1
 
 const express = require("express");
-const puppeteer = require("puppeteer-core");
+const puppeteer = require("puppeteer");
 const cors = require("cors");
 
 const app = express();
 app.use(cors());
 
 const PORT = process.env.PORT || 3000;
-console.log("=============================================================================================");
-const { exec } = require("child_process");
-
-exec("which google-chrome", (err, stdout, stderr) => {
-    console.log("✅ Google Chrome Path:", stdout || stderr);
-});
-
-exec("which chromium", (err, stdout, stderr) => {
-    console.log("✅ Chromium Path:", stdout || stderr);
-});
-console.log("=============================================================================================");
 
 app.get("/scrape", async (req, res) => {
     try {
-        const browser = await puppeteer.launch({
-            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome",
-            headless: true, // تأكد من أنه يعمل بدون واجهة رسومية
-            args: [
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-gpu",
-                "--disable-dev-shm-usage",
-                "--single-process"
-            ],
-        });
+    
         
         //==============localy================
-        ////puppeteer not core
-        // const browser = await puppeteer.launch({
-        //     headless: "new",
-        //     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
-        // });
+        //puppeteer not core
+        const browser = await puppeteer.launch({
+            headless: "new",
+            args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
+        });
         
         //==============================
 
