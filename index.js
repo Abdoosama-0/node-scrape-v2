@@ -2,6 +2,14 @@
 //     "postinstall": "puppeteer install"
 
 //   },
+//===============
+// "scripts": {
+//     "test": "echo \"Error: no test specified\" && exit 1",
+//     "dev": "nodemon index.js",
+//     "postinstall": "puppeteer install"
+
+//   },
+//==============
 const express = require("express");
 const puppeteer = require("puppeteer");
 const cors = require("cors");
