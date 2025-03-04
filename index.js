@@ -63,13 +63,13 @@ app.get("/scrape", async (req, res) => {
         
                   // تقسيم النص إلى رقم وعنوان إذا كان يحتوي على ". "
                   const parts = text.split(". ");
-                  const elements = [...el.querySelectorAll(".URyjV")];
+                //   const elements = [...el.querySelectorAll(".URyjV")];
           
                   // إنشاء كائن بالبيانات المستخرجة
                   return {
-                    year: elements[0]?.innerText.trim() || "غير متوفر", // أول عنصر
-                    time: elements[1]?.innerText.trim() || "غير متوفر", // ثاني عنصر
-                    age: elements[2]?.innerText.trim() || "غير متوفر", // ثالث
+                    // year: elements[0]?.innerText.trim() || "غير متوفر", // أول عنصر
+                    // time: elements[1]?.innerText.trim() || "غير متوفر", // ثاني عنصر
+                    // age: elements[2]?.innerText.trim() || "غير متوفر", // ثالث
                       rank: parts.length > 1 ? parseInt(parts[0], 10) : null, // استخراج الرقم إذا وجد
                       title: parts.length > 1 ? parts[1] : text // استخراج العنوان إذا كان النمط صحيحًا
                   };
