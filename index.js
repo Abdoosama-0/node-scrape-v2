@@ -1,4 +1,4 @@
-//=============================================================عدم تحميل الصفحة بالكامل================
+//===========================================================scrape video===============
 const express = require("express");
 const puppeteer = require("puppeteer");
 const cors = require("cors");
@@ -7,8 +7,17 @@ const app = express();
 app.use(cors());
 
 const PORT = process.env.PORT || 3000;
+//فى الصفحة الرئيسية انت عامل سكراب لعناصر منهم العنوان فهتاخد العنوان ده وتبعته فى  
+// scrape/......
+//title= مشاهدة مسلسل كذب أبيض موسم 1 حلقة 4
 
-app.get("/scrape", async (req, res) => {
+
+app.get("/scrape/:title", async (req, res) => {
+    const title= req.params.title
+    const y = title.replace(/ /g, "-"); 
+
+    const url="https://vbn1.t4ce4ma.shop/watch/"+y
+  
     try {
         const browser = await puppeteer.launch({
             headless: "new",
@@ -20,44 +29,27 @@ app.get("/scrape", async (req, res) => {
         
         await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
 
-   
-        await page.setRequestInterception(true);
-        page.on("request", (req) => {
-            if (["image", "stylesheet", "font", "script"].includes(req.resourceType())) {
-                req.abort();
-            } else {
-                req.continue();
-            }
-        });
+// ================================================================================================================================
 
+//انتقال الى الصفحة التى بها المسلسل 
+      await page.goto
+      (url
+    , { waitUntil: "domcontentloaded" })//domcontentloaded اسرع ,networkidle2 الصفحة كلها
+           
+  
+      //=======================================================================================================================
+    
+//==================================================================================================================
+await page.waitForSelector('.Inner--WatchServersEmbed iframe');  // انتظر تحميل iframe
 
-      await page.goto("https://www.imdb.com/chart/top/?ref_=nv_mv_250", { waitUntil: "domcontentloaded" })
+const data = await page.evaluate(() => { // ارجاع src الفيديو
+    const iframe = document.querySelector('.Inner--WatchServersEmbed iframe');
+    return {
+        videoSrc: iframe ? iframe.src : null
+    };
+});
 
-//     // ✅ تأكد من تحميل الأفلام
-//     await page.waitForSelector(".ipc-metadata-list-summary-item");
-
-//     // ✅ تمرير الصفحة لأسفل لضمان تحميل جميع الأفلام
-//     await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-
-//     // ✅ الانتظار بعد التمرير بطريقة بديلة
-//     await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const data = await page.evaluate(() => {
-            return [...document.querySelectorAll(".ipc-metadata-list-summary-item")].map((el, index)  => {
-                    const text = el.querySelector(".ipc-title__text")?.innerText || "غير متوفر";
-                    const parts = text.split(". ");
-                    const elements = [...el.querySelectorAll(".URyjV")];
-
-                    return {
-                        year: elements[0]?.innerText.trim() || "غير متوفر",
-                        time: elements[1]?.innerText.trim() || "غير متوفر",
-                        age: elements[2]?.innerText.trim() || "غير متوفر",
-                        rank: parts.length > 1 ? parseInt(parts[0], 10) : null,
-                        title: parts.length > 1 ? parts[1] : text
-                    };
-                });
-        });
-
+//=======================================================================================================================
         await browser.close();
         res.json({ success: true, data });
 
@@ -68,19 +60,27 @@ app.get("/scrape", async (req, res) => {
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-//=============================================scrape imdb
-// //  "scripts": {
-// //     "postinstall": "puppeteer install"
 
-// //   },
-// //===============
-// // "scripts": {
-// //     "test": "echo \"Error: no test specified\" && exit 1",
-// //     "dev": "nodemon index.js",
-// //     "postinstall": "puppeteer install"
 
-// //   },
-// //==============
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//=========================================================whole imdb ===============
 // const express = require("express");
 // const puppeteer = require("puppeteer");
 // const cors = require("cors");
@@ -99,27 +99,20 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 //         const page = await browser.newPage();
 
-//         // اجعل المتصفح يتظاهر بأنه مستخدم حقيقي لتجنب الحظر
+        
 //         await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
 
-//         // تعطيل تحميل الصور وملفات CSS و JS غير الضرورية لتسريع التحميل
-//         await page.setRequestInterception(true);
-//         page.on("request", (req) => {
-//             if (["image", "stylesheet", "font", "script"].includes(req.resourceType())) {
-//                 req.abort();
-//             } else {
-//                 req.continue();
-//             }
-//         });
+// // ==============================================================
 
-//         // تحميل الصفحة سريعًا بدون انتظار كل الشبكة
-//         await page.goto("https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250", { waitUntil: "domcontentloaded", timeout: 10000 });
 
-//         // استخراج البيانات (أول 20 فقط)
+//       await page.goto("https://www.imdb.com/chart/top/?ref_=nv_mv_250", { waitUntil: "networkidle2" })//domcontentloaded ,networkidle2 الصفحة كلها
+           
+  
+//       //=======================================================================================================================
+    
+// //==================================================================================================================
 //         const data = await page.evaluate(() => {
-//             return Array.from(document.querySelectorAll(".ipc-metadata-list-summary-item"))
-//                 .slice(0, 20) // جلب أول 20 فقط
-//                 .map(el => {
+//             return [...document.querySelectorAll(".ipc-metadata-list-summary-item")].map((el, index)  => {
 //                     const text = el.querySelector(".ipc-title__text")?.innerText || "غير متوفر";
 //                     const parts = text.split(". ");
 //                     const elements = [...el.querySelectorAll(".URyjV")];
@@ -146,7 +139,45 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 
-//==================================================================scraping dynamic js  with deploy on railway
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//==================================================================scraping bbc dynamic js  with deploy on railway 
 // //  "scripts": {
 // //     "postinstall": "puppeteer install"
 

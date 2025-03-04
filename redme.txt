@@ -1,0 +1,38 @@
+ "scripts": {
+    "postinstall": "puppeteer install"
+
+  },
+//===============
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "postinstall": "puppeteer install"
+
+  },
+
+
+   //=========================================عرض محتوى قليل======================================
+
+        // await page.setRequestInterception(true);
+        // page.on("request", (req) => {
+        //     if (["image", "stylesheet", "font", "script"].includes(req.resourceType())) {
+        //         req.abort();
+        //     } else {
+        //         req.continue();
+        //     }
+        // });
+
+//       await page.goto("https://www.imdb.com/chart/top/?ref_=nv_mv_250", { waitUntil: "domcontentloaded" })//domcontentloaded اسرع ,networkidle2 الصفحة كلها
+
+// ==============================================================
+
+
+
+
+//=========================================================
+  
+//=========================================================
+
+
+
+==============================================================
